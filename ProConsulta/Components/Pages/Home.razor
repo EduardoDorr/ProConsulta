@@ -1,0 +1,80 @@
+﻿@using ProConsulta.Models.Appointments
+@using System.Globalization
+@page "/"
+@inject IAppointmentRepository repository;
+
+<PageTitle>DASHBOARD</PageTitle>
+
+<MudText Typo="Typo.h3" Class="d-flex justify-content-center">DASHBOARD</MudText>
+
+<div>
+    <MudChart ChartType="ChartType.Bar"
+              ChartSeries="@_series"
+              XAxisLabels="@_xAxisLabels"
+              ChartOptions="@_options"
+              Width="100%"
+              Height="350px" />
+
+
+</div>
+
+<div>
+    <MudPaper Class="p-4">
+        <MudChart ChartType="ChartType.Pie"
+                  InputData="@_data"
+                  InputLabels="@_labels"
+                  Width="300px"
+                  Height="350px" />
+    </MudPaper>
+</div>
+
+@code {
+    private ChartOptions _options =
+        new ChartOptions
+            {
+                LineStrokeWidth = 20,
+                YAxisTicks = 1,
+            };
+
+    private string[] _xAxisLabels = [];
+    private List<ChartSeries> _series = [];
+
+    private double[] _data = [];
+    private string[] _labels = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await repository.GetReportAsync();
+
+        if (result is null || !result.Any())
+            return;
+
+        CreateBarGraph(result);
+        CreatePieGraph(result);
+    }
+
+    private void CreateBarGraph(List<AnualAppointments> appointments)
+    {
+        _xAxisLabels = appointments
+            .Select(x => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x.Month))
+            .ToArray();
+
+        var series =
+            new ChartSeries
+                {
+                    Name = "Atendimentos Mensais",
+                    Data = appointments.Select(x => (double)x.Quantity).ToArray()
+                };
+
+        _series.Add(series);
+    }
+
+    private void CreatePieGraph(List<AnualAppointments> appointments)
+    {
+        _labels = appointments
+            .Select(x => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x.Month))
+            .ToArray();
+
+        _data = appointments.Select(x => (double)x.Quantity).ToArray();
+    }
+}

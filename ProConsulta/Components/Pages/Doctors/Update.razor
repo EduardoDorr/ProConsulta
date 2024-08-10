@@ -1,0 +1,75 @@
+﻿@page "/medicos/atualizar/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@inherits UpdatePage
+
+@attribute [Authorize(Roles = "Atendente")]
+
+<PageTitle>Médicos</PageTitle>
+
+<MudText Typo="Typo.h3">Editar Médico</MudText>
+
+<MudPaper Class="pa-8 mt-4">
+    <EditForm Model="@InputModel"
+              OnValidSubmit="OnValidSubmitAsync">
+
+        <DataAnnotationsValidator />
+
+        <MudTextField Label="Nome"
+                      Variant="Variant.Outlined"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Name"
+                      For="@(() => InputModel.Name)" />
+
+        <MudTextField Label="Documento"
+                      Variant="Variant.Outlined"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Document"
+                      Mask="@(new PatternMask("000.000.000-00"))"
+                      For="@(() => InputModel.Document)" />
+
+        <MudTextField Label="CRM"
+                      Variant="Variant.Outlined"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Crm"
+                      Mask="@(new PatternMask("aa-000000"))"
+                      For="@(() => InputModel.Crm)" />
+
+        <MudTextField Label="E-mail"
+                      Variant="Variant.Outlined"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Email"
+                      For="@(() => InputModel.Email)" />
+
+        <MudTextField Label="Telefone"
+                      Variant="Variant.Outlined"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Telephone"
+                      Mask="@(new PatternMask("(00) 0 0000-0000"))"
+                      For="@(() => InputModel.Telephone)" />
+
+        <MudSelect Label="Especialidade"
+                   Text=""
+                   @bind-Value="InputModel.SpecialityId"
+                   Variant="Variant.Outlined"
+                   AnchorOrigin="Origin.BottomCenter"
+                   For="@(() => InputModel.SpecialityId)">
+            @foreach (var speciality in Specialities)
+            {
+                <MudSelectItem Value="@speciality.Id">
+                    @speciality.Name
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudDivider Class="m-4" />
+
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Tertiary"
+                   Size="Size.Large"
+                   ButtonType="ButtonType.Submit">
+            SALVAR
+        </MudButton>
+
+    </EditForm>
+</MudPaper>
